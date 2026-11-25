@@ -1,0 +1,25 @@
+services:
+  nut:
+    image: ghcr.io/davejlong/nut:latest
+    container_name: nut
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - 3493:3493
+    volumes:
+      - "./config:/etc/nut"
+    devices:
+      - /dev/bus/usb/001/003
+    environment:
+
+  nutgui:
+    image: ghcr.io/superioone/nut_webgui:latest
+    container_name: webnut
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+    environment:
+      UPSD_ADDR: nut
+      UPSD_USER: upsmon
+      UPSD_PASS: password
+

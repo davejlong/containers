@@ -1,0 +1,27 @@
+FROM alpine:latest
+
+ENV NUT_QUIET_INIT_SSL=true
+ENV NUT_USER=upsmon
+ENV NUT_PASS=password
+ENV NUT_DRIVER=usbhid-ups
+ENV NUT_PORT=auto
+ENV NUT_UPS_DESC="Generic UPS"
+ENV NUT_UPS_ID="ups"
+
+RUN apk add nut busybox curl
+
+RUN mkdir -p /var/run/nut && \
+  chown -R nut:nut /var/run/nut && \
+  chmod 770 /var/run/nut
+
+RUN cp -r /etc/nut /etc/nut.orig
+
+RUN ln -s /dev/null /bin/wall # Fix UPS trying to send messages to wall
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 3493
+HEALTHCHECK CMD [[ $(upsc -l localhost:3493) ]]
+VOLUME /nut
+ENTRYPOINT /entrypoint.sh

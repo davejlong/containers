@@ -1,0 +1,18 @@
+#!/bin/bash
+# upssched command handler
+
+case "$1" in
+    onbatt)
+        # Power has been on battery for 30 seconds - send alert
+        logger "UPS: Power lost - running on battery"
+        # Add your alert method here (email, webhook, etc.)
+        ;;
+    lowbatt)
+        # Battery critically low - initiate shutdown
+        logger "UPS: Battery low - initiating shutdown"
+        /sbin/upsmon -c fsd
+        ;;
+    *)
+        logger "upssched-cmd: unrecognized event: $1"
+        ;;
+esac
